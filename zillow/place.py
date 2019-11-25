@@ -83,6 +83,7 @@ class ZEstimateData(SourceData):
         self.valuation_range_low = None
         self.valuation_range_high = None
 
+
     def set_data(self, source_data):
         """
         :source_data: Data from data.get('SearchResults:searchresults', None)['response']['results']['result']['zestimate']
@@ -106,6 +107,41 @@ class ZEstimateData(SourceData):
             self.valuation_range_high = int(source_data['valuationRange']['high']['#text'])
         except:
             self.valuation_range_high = None
+
+
+class RentZestimate(SourceData):
+    def __init__(self, **kwargs):
+        self.rentamount = None
+        self.rent_amount_currency = None
+        self.rent_amount_last_updated = None
+
+        self.rent_valuation_range_low = None
+        self.rent_valuation_range_high = None
+
+    def set_data(self, source_data):
+        """
+        :source_data: Data from data.get('SearchResults:searchresults', None)['response']['results']['result']['zestimate']
+        :return:
+        """
+
+        try:
+            self.rentamount = int(source_data['amount']['#text'])
+        except:
+            self.rentamount = None
+
+        self.rent_amount_currency = source_data['amount']['@currency']
+        self.rent_amount_last_updated = source_data['last-updated']
+
+        try:
+            self.rent_valuation_range_low = int(source_data['valuationRange']['low']['#text'])
+        except:
+            self.rent_valuation_range_low = None
+        try:
+            self.rent_valuation_range_high = int(source_data['valuationRange']['high']['#text'])
+        except:
+            self.rent_valuation_range_high = None
+
+
 
 class LocalRealEstate(SourceData):
     def __init__(self):
@@ -171,6 +207,7 @@ class Place(SourceData):
         self.links = Links()
         self.full_address = FullAddress()
         self.zestimate = ZEstimateData()
+        self.rentzestimate = RentZestimate()
         self.local_realestate = LocalRealEstate()
         self.similarity_score = None
         self.extended_data = ExtendedData()
@@ -200,6 +237,7 @@ class Place(SourceData):
         self.full_address.set_data(source_data['address'])
         self.zestimate.set_data(source_data['zestimate'])
         self.local_realestate.set_data(source_data['localRealEstate'])
+        self.rentzestimate.set_data(source_data['rentzestimate'])
         if self.has_extended_data:
             self.extended_data.set_data(source_data)
 
@@ -210,6 +248,7 @@ class Place(SourceData):
             'links': self.links.get_dict(),
             'full_address': self.full_address.get_dict(),
             'zestimate': self.zestimate.get_dict(),
+            'rentzestimate':self.rentzestimate.get_dict(),
             'local_realestate': self.local_realestate.get_dict(),
             'extended_data': self.extended_data.get_dict()
         }
